@@ -1,30 +1,38 @@
-var express = require('express');
-var app = express();
-var cors = require('cors')
-var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
-var port = process.env.PORT || 8080;
-var db = 'mongodb+srv://admin:qwertyuiop@cluster0.8og4myr.mongodb.net/test?retryWrites=true&w=majority';
+const express = require("express");
+const app = express();
+const mongoose = require("mongoose");
+const cors = require("cors");
+require("dotenv").config();
+const bodyParser = require("body-parser");
+const { errors } = require("celebrate");
+const stores = require("./routes/store");
+const users = require("./routes/user");
+const checkin = require("./routes/checkin");
 
-var stores = require('./routes/store');
-var users = require('./routes/user');
+const port = process.env.PORT || 8080;
+const db = process.env.MONGO_URI;
 
 mongoose.connect(db);
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
-app.use(cors())
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
+app.use(cors());
 
-app.use('/store', stores);
-app.use('/user', users);
+app.use("/store", stores);
+app.use("/user", users);
+app.use("/checkin", checkin);
 
-app.get('/', function(req, res){
-    console.log('app starting on port: '+port)
-    res.send('App Online');
+app.get("/", function (req, res) {
+  console.log("app starting on port: " + port);
+  res.send("App Online");
 });
 
-app.listen(port, function(){
-    console.log('App listening on port: '+port);
+app.use(errors());
+
+app.listen(port, function () {
+  console.log("App listening on port: " + port);
 });

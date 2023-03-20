@@ -27,8 +27,31 @@ router.get("/:id", function (req, res) {
   });
 });
 
+router.get("/list-by-category/:category", function (req, res) {
+  Store.find({
+    category: req.params.category,
+  }).exec(function (err, store) {
+    if (err) {
+      res.send("error has occured");
+    } else {
+      res.json(store);
+    }
+  });
+});
+
+router.get("/list-by-email/:email", function (req, res) {
+  Store.find({
+    email: req.params.email,
+  }).exec(function (err, store) {
+    if (err) {
+      res.send("error has occured");
+    } else {
+      res.json(store);
+    }
+  });
+});
+
 router.post("/list", function (req, res) {
-  console.log(req.body);
   Store.find({
     email: req.body.email,
   }).exec(function (err, store) {
