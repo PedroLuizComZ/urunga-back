@@ -4,7 +4,11 @@ var router = express.Router();
 
 router.get("/", function (req, res) {
   console.log("getting all stores");
-  Store.find({}).exec(function (err, stores) {
+  let filter = {};
+  if (req.query.city) {
+    filter.city = req.query.city;
+  }
+  Store.find(filter).exec(function (err, stores) {
     if (err) {
       res.send("error has occured");
     } else {
@@ -64,13 +68,16 @@ router.post("/list", function (req, res) {
 });
 
 router.post("/", function (req, res) {
-  const { name, logo, description, email, promotions } = req.body;
+  const { name, logo, description, email, promotions, category, city } =
+    req.body;
   var newStore = new Store();
   newStore.name = name;
   newStore.logo = logo;
   newStore.description = description;
   newStore.email = email;
   newStore.promotions = promotions;
+  newStore.category = category;
+  newStore.city = city;
   newStore.save(function (err, store) {
     if (err) {
       res.send("error saving store");
@@ -82,7 +89,7 @@ router.post("/", function (req, res) {
 });
 
 router.put("/:id", function (req, res) {
-  const { name, logo, description, promotions } = req.body;
+  const { name, logo, description, promotions, city, category } = req.body;
   Store.findOneAndUpdate(
     {
       _id: req.params.id,
@@ -93,6 +100,8 @@ router.put("/:id", function (req, res) {
         logo,
         description,
         promotions,
+        city,
+        category,
       },
     },
     {

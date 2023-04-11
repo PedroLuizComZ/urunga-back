@@ -9,8 +9,9 @@ router.post(
   celebrate({ [Segments.BODY]: validation.checkinSchema }),
   function (req, res) {
     var newCheckin = new Checkin();
-    newCheckin.userId = req.body.name;
-    newCheckin.storeId = req.body.name;
+    newCheckin.userId = req.body.userId;
+    newCheckin.storeId = req.body.storeId;
+    newCheckin.promotionId = req.body.promotionId;
     newCheckin.save(function (err, checkin) {
       if (err) {
         res.send("error saving checkin");

@@ -4,6 +4,7 @@ var Schema = mongoose.Schema;
 var checkinSchema = new Schema({
   userId: String,
   storeId: String,
+  promotionId: String,
   checkinAt: { type: Date, default: new Date() },
 });
 

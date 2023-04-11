@@ -5,6 +5,7 @@ var userSchema = new Schema({
 	name: String,
 	email: String,
 	password: String,
+	checkoutSessionId: String,
 	city: { type: String, default: "outro" },
 	type: { type: String, default: "client" },
 });
