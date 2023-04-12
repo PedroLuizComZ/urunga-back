@@ -44,7 +44,9 @@ router.post(
         res.send("error has occured");
       } else {
         if (!user) {
-          return res.status(401).send({ status: "error", message: "User not found" });
+          return res
+            .status(401)
+            .send({ status: "error", message: "User not found" });
         }
         const token = generateAccessToken(user);
         res.send({ sessionToken: token, status: "success" });
@@ -130,6 +132,20 @@ router.delete("/:id", function (req, res) {
       }
     }
   );
+});
+
+router.post("/webhook", async function (req, res) {
+  if (req.body.type === "checkout.session.completed") {
+    const email = req.body.data.object.customer_email
+
+    await User.updateOne(
+      { email },
+      { checkoutSessionId: req.body.data.object.id }
+    );
+    res.send("Handle webhook");
+  } else {
+    res.send("error saving checkoutSessionId");
+  }
 });
 
 module.exports = router;
