@@ -65,7 +65,8 @@ router.post("/", function (req, res) {
       res.send("error saving user");
     } else {
       console.log(user);
-      res.send(user);
+      const token = generateAccessToken(user);
+      res.send({ sessionToken: token, status: "success" });
     }
   });
 });
