@@ -2,6 +2,7 @@ var express = require("express");
 var User = require("../models/user");
 const { celebrate, Segments } = require("celebrate");
 const validation = require("../validations/user");
+const nodemailer = require("nodemailer");
 const generateAccessToken = require("../utils/generateAccessToken");
 
 var router = express.Router();
@@ -137,7 +138,7 @@ router.delete("/:id", function (req, res) {
 
 router.post("/webhook", async function (req, res) {
   if (req.body.type === "checkout.session.completed") {
-    const email = req.body.data.object.customer_email
+    const email = req.body.data.object.customer_email;
 
     await User.updateOne(
       { email },
@@ -147,6 +148,69 @@ router.post("/webhook", async function (req, res) {
   } else {
     res.send("error saving checkoutSessionId");
   }
+});
+
+router.post("/forget-password", async function (req, res) {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "pelfsilva@gmail.com",
+        pass: "osiwbqglffmigtag",
+      },
+    });
+
+    const user = await User.findOne({
+      email: req.body.email,
+    });
+
+    console.log(user);
+    if (!user) {
+      res.send("Internal Error");
+    } else {
+      const mailOptions = {
+        from: "pelfsilva@gmail.com",
+        to: req.body.email,
+        subject: "Urunga - Esqueceu sua senha?",
+        html: `<a href='https://www.urunga.com.br/reset/${user._id}'>Clique aqui para resetar sua senha </a>`,
+      };
+
+      transporter.sendMail(mailOptions, function (error, info) {
+        res.send("Success");
+
+        if (error) {
+          console.log(error);
+        }
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.send("Internal Error");
+  }
+});
+
+router.post("/new-password", async function (req, res) {
+  await User.findOneAndUpdate(
+    {
+      _id: req.body.id,
+    },
+    {
+      $set: {
+        password: req.body.password,
+      },
+    },
+    {
+      upsert: true,
+    },
+    function (err, newUser) {
+      if (err) {
+        res.send("error updating user");
+      } else {
+        console.log(newUser);
+        res.send(newUser);
+      }
+    }
+  );
 });
 
 module.exports = router;
