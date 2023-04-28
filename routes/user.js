@@ -82,6 +82,8 @@ router.post(
     newUser.password = req.body.password;
     newUser.city = req.body.city;
     newUser.type = req.body.type;
+    newUser.gender = req.body.gender;
+    newUser.birthdate = req.body.birthdate;
 
     newUser.save((err, user) => {
       if (err) {
