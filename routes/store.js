@@ -68,12 +68,23 @@ router.post("/list", function (req, res) {
 });
 
 router.post("/", function (req, res) {
-  const { name, logo, description, email, promotions, category, city } =
-    req.body;
+  const {
+    name,
+    logo,
+    description,
+    email,
+    promotions,
+    category,
+    city,
+    google,
+    instagram,
+  } = req.body;
   var newStore = new Store();
   newStore.name = name;
   newStore.logo = logo;
   newStore.description = description;
+  newStore.instagram = instagram;
+  newStore.google = google;
   newStore.email = email;
   newStore.promotions = promotions;
   newStore.category = category;
@@ -89,7 +100,16 @@ router.post("/", function (req, res) {
 });
 
 router.put("/:id", function (req, res) {
-  const { name, logo, description, promotions, city, category } = req.body;
+  const {
+    name,
+    logo,
+    description,
+    promotions,
+    category,
+    city,
+    google,
+    instagram,
+  } = req.body;
   Store.findOneAndUpdate(
     {
       _id: req.params.id,
@@ -102,6 +122,8 @@ router.put("/:id", function (req, res) {
         promotions,
         city,
         category,
+        google,
+        instagram,
       },
     },
     {

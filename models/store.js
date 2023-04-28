@@ -8,6 +8,8 @@ const StoreSchema = new Schema({
   email: String,
   category: String,
   city: String,
+  google: String,
+  instagram: String,
   promotions: [String],
 });
 
