@@ -11,6 +11,11 @@ const StoreSchema = new Schema({
   google: String,
   instagram: String,
   promotions: [String],
+  rating: [{
+    userId: String,
+    commentary: String,
+    ratingValue: Number,
+  }],
 });
 
 module.exports = mongoose.model("Store", StoreSchema);

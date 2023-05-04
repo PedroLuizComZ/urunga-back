@@ -140,6 +140,43 @@ router.put("/:id", function (req, res) {
   );
 });
 
+router.put("/rating/:storeId", async function (req, res) {
+  const { userId, commentary, ratingValue } = req.body;
+  const storeResult = await Store.findOne({
+    _id: req.params.storeId,
+  });
+
+  const index = storeResult.rating.findIndex((item) => item.userId === userId);
+  let rating = storeResult.rating
+
+  if (index === -1) {
+    rating.push({ userId, commentary, ratingValue })
+  } else {
+    rating[index] = { userId, commentary, ratingValue }
+  }
+
+  Store.findOneAndUpdate(
+    {
+      _id: req.params.storeId,
+    },
+    {
+      $set: {
+        rating,
+      },
+    },
+    function (err, rating) {
+      if (err) {
+        res.send("error updating rating");
+      } else {
+        console.log(rating);
+        res.send(rating);
+      }
+    }
+  );
+
+  console.log(storeResult);
+});
+
 router.delete("/:id", function (req, res) {
   Store.findByIdAndRemove(
     {
