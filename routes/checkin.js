@@ -26,17 +26,13 @@ router.post(
 router.get("/:id", function (req, res) {
   console.log("getting one user");
 
-  const oneWeek = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000);
-
   const storeId = req.query.storeId;
-
-  console.log("storeId", storeId);
 
   Checkin.find({
     userId: req.params.id,
     storeId: storeId,
   })
-    .sort({ createdAt: -1 })
+    .sort({ checkinAt: -1 })
     .exec(function (err, checkin) {
       if (err) {
         console.error("Erro ao buscar check-ins:", err);
@@ -51,10 +47,9 @@ router.get("/:id", function (req, res) {
           today.getMonth(),
           today.getDate() - 7
         );
-        const dateToCheck = new Date(checkin[0].createdAt);
-
+        const dateToCheck = new Date(checkin[0].checkinAt);
         // Compare the two dates
-        if (dateToCheck < oneWeekAgo) {
+        if (dateToCheck.getTime() < oneWeekAgo.getTime()) {
           return res.send({ status: "success" });
         } else {
           return res.send({ status: "error" });
