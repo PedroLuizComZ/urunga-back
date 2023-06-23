@@ -6,7 +6,7 @@ const createUserSchema = Joi.object().keys({
   password: Joi.string().required(),
   city: Joi.string().required(),
   type: Joi.string().required(),
-  gender: Joi.string().required(),
+  gender: Joi.string(),
   birthdate: Joi.string(),
 });
 
