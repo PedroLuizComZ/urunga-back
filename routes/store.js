@@ -32,9 +32,13 @@ router.get("/:id", function (req, res) {
 });
 
 router.get("/list-by-category/:category", function (req, res) {
-  Store.find({
+  let filter = {
     category: req.params.category,
-  }).exec(function (err, store) {
+  };
+  if (req.query.city) {
+    filter.city = req.query.city;
+  }
+  Store.find(filter).exec(function (err, store) {
     if (err) {
       res.send("error has occured");
     } else {
@@ -147,12 +151,12 @@ router.put("/rating/:storeId", async function (req, res) {
   });
 
   const index = storeResult.rating.findIndex((item) => item.userId === userId);
-  let rating = storeResult.rating
+  let rating = storeResult.rating;
 
   if (index === -1) {
-    rating.push({ userId, commentary, ratingValue })
+    rating.push({ userId, commentary, ratingValue });
   } else {
-    rating[index] = { userId, commentary, ratingValue }
+    rating[index] = { userId, commentary, ratingValue };
   }
 
   Store.findOneAndUpdate(
