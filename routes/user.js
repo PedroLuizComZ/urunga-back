@@ -85,14 +85,29 @@ router.post(
     newUser.gender = req.body.gender;
     newUser.birthdate = req.body.birthdate;
 
-    newUser.save((err, user) => {
+    User.findOne({
+      email: req.body.email,
+    }).exec(function (err, user) {
       if (err) {
-        res.send("error saving user");
+        res.send("Ocorreu um erro");
       } else {
-        const token = generateAccessToken(user);
-        res.send({ sessionToken: token });
+        if (!user) {
+          return newUser.save((err, user) => {
+            if (err) {
+              res.send("Erro ao criar um usuario");
+            } else {
+              const token = generateAccessToken(user);
+              res.send({ sessionToken: token });
+            }
+          });
+        }
+        return res
+            .status(409)
+            .send({ status: "error", message: "O usuário já existe, use outro e-mail" });
       }
     });
+
+    
   }
 );
 
