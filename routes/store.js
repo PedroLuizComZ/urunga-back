@@ -72,27 +72,9 @@ router.post("/list", function (req, res) {
 });
 
 router.post("/", function (req, res) {
-  const {
-    name,
-    logo,
-    description,
-    email,
-    promotions,
-    category,
-    city,
-    google,
-    instagram,
-  } = req.body;
-  var newStore = new Store();
-  newStore.name = name;
-  newStore.logo = logo;
-  newStore.description = description;
-  newStore.instagram = instagram;
-  newStore.google = google;
-  newStore.email = email;
-  newStore.promotions = promotions;
-  newStore.category = category;
-  newStore.city = city;
+  const newStore = new Store({
+    ...req.body,
+  });
   newStore.save(function (err, store) {
     if (err) {
       res.send("error saving store");
@@ -113,6 +95,15 @@ router.put("/:id", function (req, res) {
     city,
     google,
     instagram,
+    review,
+    veggie,
+    petFriendly,
+    kids,
+    accessibility,
+    contactName,
+    contactPhone,
+    contactEmail,
+    pix,
   } = req.body;
   Store.findOneAndUpdate(
     {
@@ -128,6 +119,15 @@ router.put("/:id", function (req, res) {
         category,
         google,
         instagram,
+        review,
+        veggie,
+        petFriendly,
+        kids,
+        accessibility,
+        contactName,
+        contactPhone,
+        contactEmail,
+        pix,
       },
     },
     {
