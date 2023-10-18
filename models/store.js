@@ -24,6 +24,7 @@ const StoreSchema = new Schema({
     userId: String,
     commentary: String,
     ratingValue: Number,
+    answer: { type: String, default: "" },
   }],
 });
 

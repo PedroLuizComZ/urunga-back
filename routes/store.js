@@ -1,5 +1,7 @@
 var express = require("express");
 var Store = require("../models/store");
+var User = require("../models/user");
+
 var router = express.Router();
 
 router.get("/", function (req, res) {
@@ -21,11 +23,34 @@ router.get("/", function (req, res) {
 router.get("/:id", function (req, res) {
   Store.findOne({
     _id: req.params.id,
-  }).exec(function (err, store) {
+  }).exec(async function (err, store) {
     if (err) {
       res.send("error has occured");
     } else {
-      console.log(store);
+      const ids = store.rating.map((item) => item.userId);
+ 
+      if(ids.length !== 0) { 
+        const listNames = await User.find(
+          {
+            _id: { $in: ids },
+          },
+          "name"
+        );
+
+        const storeWithName = JSON.parse(JSON.stringify(store));
+
+        storeWithName.rating = storeWithName.rating.map(ratingItem => {
+          const user = listNames.find(u => u._id == ratingItem.userId);
+          console.log(user)
+          if (user) {
+            ratingItem.userName = user.name;
+          }
+          return ratingItem;
+        });
+
+        return res.json(storeWithName);
+      }
+
       res.json(store);
     }
   });
@@ -128,6 +153,33 @@ router.put("/:id", function (req, res) {
         contactPhone,
         contactEmail,
         pix,
+      },
+    },
+    {
+      upsert: true,
+    },
+    function (err, newStore) {
+      if (err) {
+        res.send("error updating store");
+      } else {
+        console.log(newStore);
+        res.send(newStore);
+      }
+    }
+  );
+});
+
+router.post("/rating/:id", function (req, res) {
+  const {
+    rating
+  } = req.body;
+  Store.findOneAndUpdate(
+    {
+      _id: req.params.id,
+    },
+    {
+      $set: {
+        rating
       },
     },
     {
