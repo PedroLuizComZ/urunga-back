@@ -66,7 +66,14 @@ router.get("/dashboard/:id", async function (req, res) {
   const now = new Date();
   const startOfLastMonth = new Date();
 
-  startOfLastMonth.setMonth(now.getMonth() - 1);
+  let periodValue = 12;
+
+  if (req.query.period) {
+    periodValue =
+      req.query.period === "YTD" ? startOfLastMonth.getMonth() : +req.query.period;
+  }
+
+  startOfLastMonth.setMonth(now.getMonth() - periodValue);
   startOfLastMonth.setDate(1);
   startOfLastMonth.setHours(0, 0, 0, 0);
 
@@ -83,27 +90,28 @@ router.get("/dashboard/:id", async function (req, res) {
       console.error("Erro ao buscar dados:", err);
       res.status(500).send("error has occured");
     } else {
-      let firstPeriod = 0;
-      let secondPeriod = 0;
-      let thirdPeriod = 0;
+
+      let groupDay = [];
+
+      for (let day = 1; day <= 31; day++) {
+        groupDay.push(0);
+      }
 
       checkin.forEach((item) => {
-        const date = new Date(item.checkinAt);
-        if (date.getDate() <= 10) {
-          firstPeriod = firstPeriod + 1;
-        } else if (date.getDate() <= 20) {
-          secondPeriod = secondPeriod + 1;
-        } else {
-          thirdPeriod = thirdPeriod + 1;
-        }
+        const dateDay = new Date(item.checkinAt).getDay();
+        groupDay[dateDay] = groupDay[dateDay] + 1;
       });
 
-      payload.checkinLine = [firstPeriod, secondPeriod, thirdPeriod];
+      payload.checkinLine = groupDay;
     }
   });
 
   await Checkin.find({
     storeId: req.params.id,
+    checkinAt: {
+      $gte: startOfLastMonth,
+      $lt: now,
+    },
   }).exec(async function (err, checkin) {
     if (err) {
       console.error("Erro ao buscar dados:", err);
@@ -123,7 +131,6 @@ router.get("/dashboard/:id", async function (req, res) {
       return res.send(payload);
     }
   });
-
 });
 
 const countUsersByGender = (users) => {
