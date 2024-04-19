@@ -74,6 +74,7 @@ router.get("/:id", function (req, res) {
 router.get("/list-by-category/:category", function (req, res) {
   let filter = {
     category: req.params.category,
+    active: true,
   };
   if (req.query.city) {
     filter.city = req.query.city;
