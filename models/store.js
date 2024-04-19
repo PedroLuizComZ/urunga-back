@@ -20,12 +20,15 @@ const StoreSchema = new Schema({
   kids: Boolean,
   accessibility: Boolean,
   promotions: [String],
-  rating: [{
-    userId: String,
-    commentary: String,
-    ratingValue: Number,
-    answer: { type: String, default: "" },
-  }],
+  active: { type: Boolean, default: false },
+  rating: [
+    {
+      userId: String,
+      commentary: String,
+      ratingValue: Number,
+      answer: { type: String, default: "" },
+    },
+  ],
 });
 
 module.exports = mongoose.model("Store", StoreSchema);

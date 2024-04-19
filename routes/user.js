@@ -2,7 +2,7 @@ var express = require("express");
 var User = require("../models/user");
 const { celebrate, Segments } = require("celebrate");
 const validation = require("../validations/user");
-const nodemailer = require("nodemailer");
+const transporter = require("../utils/transporter");
 const generateAccessToken = require("../utils/generateAccessToken");
 
 var router = express.Router();
@@ -102,12 +102,13 @@ router.post(
           });
         }
         return res
-            .status(409)
-            .send({ status: "error", message: "O usuário já existe, use outro e-mail" });
+          .status(409)
+          .send({
+            status: "error",
+            message: "O usuário já existe, use outro e-mail",
+          });
       }
     });
-
-    
   }
 );
 
@@ -169,14 +170,6 @@ router.post("/webhook", async function (req, res) {
 
 router.post("/forget-password", async function (req, res) {
   try {
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: "app.urunga@gmail.com",
-        pass: "hvldbafwtzccdmyf",
-      },
-    });
-
     const user = await User.findOne({
       email: req.body.email,
     });
@@ -186,7 +179,7 @@ router.post("/forget-password", async function (req, res) {
       res.send("Internal Error");
     } else {
       const mailOptions = {
-        from: "pelfsilva@gmail.com",
+        from: "app.urunga@gmail.com",
         to: req.body.email,
         subject: "Urunga - Esqueceu sua senha?",
         html: `<a href='https://www.urunga.com.br/reset/${user._id}'>Clique aqui para resetar sua senha </a>`,

@@ -9,6 +9,7 @@ var userSchema = new Schema({
 	city: { type: String, default: "outro" },
 	type: { type: String, default: "client" },
 	gender: { type: String, default: "outro" },
+	isAdmin: { type: Boolean, default: false },
 	birthdate: { type: String, default: `${new Date()}` },
 });
 
